@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../../components/product/ProductCard';
@@ -35,14 +36,14 @@ const ProductsPage = () => {
   // Filter products based on selected category, model, and search term
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
-    const matchesModel = selectedModel === '' || product.compatibleModels.includes(selectedModel);
-    const matchesSearch = !searchTerm || product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesModel = selectedModel === '' || product.model === selectedModel;
+    const matchesSearch = !searchTerm || product.title.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesModel && matchesSearch;
   });
 
   // Extract unique categories and models from products data
   const categories = [...new Set(products.map(p => p.category))];
-  const models = [...new Set(products.flatMap(p => p.compatibleModels))];
+  const models = [...new Set(products.map(p => p.model))];
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">

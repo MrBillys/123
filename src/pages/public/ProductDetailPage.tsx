@@ -1,19 +1,8 @@
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import { products } from '../../data/products';
-
-interface Product {
-  id: string;
-  name: string;
-  cost: number;
-  imageUrl: string;
-  inStock: boolean;
-  viewCount: number;
-  category: string;
-  compatibleModels: string[];
-  description: string;
-}
+import { Product, getProductById } from '../../data/products';
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +10,10 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     if (id) {
-      const foundProduct = products.find(p => p.id === id);
-      setProduct(foundProduct);
+      // Use the getProductById function from data/products
+      const foundProduct = getProductById(id);
+      // Use setState function style to avoid type mismatches
+      setProduct(currentProduct => foundProduct || currentProduct);
     }
   }, [id]);
 
@@ -33,18 +24,18 @@ const ProductDetailPage = () => {
           {/* Product Image */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <img 
-              src={product.imageUrl} 
-              alt={product.name} 
+              src={product.image || '/placeholder-image.jpg'} 
+              alt={product.title} 
               className="w-full object-contain h-80"
             />
           </div>
           
           {/* Product Details */}
           <div>
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             <div className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-primary-600">${product.cost.toFixed(2)}</span>
-              <span className="ml-2 text-secondary-500 text-sm">{product.inStock ? 'In Stock' : 'Out of Stock'}</span>
+              <span className="text-2xl font-bold text-primary-600">Part #: {product.partCode}</span>
+              <span className="ml-2 text-secondary-500 text-sm">{product.stockStatus}</span>
             </div>
             <div className="flex items-center mb-6">
               {[...Array(5)].map((_, i) => (
@@ -54,13 +45,13 @@ const ProductDetailPage = () => {
                   className={i < 4 ? "text-yellow-400 fill-yellow-400" : "text-secondary-300"} 
                 />
               ))}
-              <span className="ml-2 text-secondary-600 text-sm">{product.viewCount} reviews</span>
+              <span className="ml-2 text-secondary-600 text-sm">{product.viewCount} views</span>
             </div>
             
             <p className="text-secondary-700 mb-6">{product.description}</p>
             
             <button className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition duration-300">
-              Add to Cart
+              Request Quote
             </button>
           </div>
         </div>

@@ -1,5 +1,3 @@
-import React from 'react';
-
 const SearchAnalytics = () => {
   // Mock data for search analytics
   const analyticsData = {
