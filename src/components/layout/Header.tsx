@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Menu, X, Search } from 'lucide-react';
 import Logo from '../common/Logo';
 import Button from '../common/Button';
@@ -7,7 +7,6 @@ import Button from '../common/Button';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const location = useLocation();
   
   const toggleMenu = () => setIsOpen(!isOpen);
   
