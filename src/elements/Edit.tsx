@@ -1,10 +1,19 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+interface Student {
+  id: string | number;
+  name: string;
+  email: string;
+  admin: string;
+}
+
 function Edit() {
-  const [data, setData] = useState([]);
-  const { id } = useParams();
+  const [data, setData] = useState<Student[]>([]);
+  const { id } = useParams<{ id: string }>();
+  
   useEffect(() => {
     axios
       .get(`/get_student/${id}`)
@@ -16,7 +25,7 @@ function Edit() {
 
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     axios
@@ -36,7 +45,7 @@ function Edit() {
       </Link>
       {data.map((student) => {
         return (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} key={student.id}>
             <div className="form-group my-3">
               <label htmlFor="name">Name</label>
               <input

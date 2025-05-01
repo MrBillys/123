@@ -1,10 +1,19 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
+interface Student {
+  id: string | number;
+  name: string;
+  email: string;
+  admin: string;
+}
+
 function Read() {
-  const [data, setData] = useState([]);
-  const { id } = useParams();
+  const [data, setData] = useState<Student[]>([]);
+  const { id } = useParams<{ id: string }>();
+
   useEffect(() => {
     axios
       .get(`/get_student/${id}`)
@@ -13,28 +22,29 @@ function Read() {
       })
       .catch((err) => console.log(err));
   }, [id]);
+
   return (
     <div className="container-fluid vw-100 vh-100 bg-primary">
       <h1>User {id}</h1>
       <Link to="/" className="btn btn-success">Back</Link>
       {data.map((student) => {
         return (
-          <ul className="list-group">
+          <ul className="list-group" key={student.id}>
             <li className="list-group-item">
               <b>ID: </b>
-              {student["id"]}
+              {student.id}
             </li>
             <li className="list-group-item">
               <b>Name: </b>
-              {student["name"]}
+              {student.name}
             </li>
             <li className="list-group-item">
               <b>Email: </b>
-              {student["email"]}
+              {student.email}
             </li>
             <li className="list-group-item">
               <b>Admin: </b>
-              {student["admin"]}
+              {student.admin}
             </li>
           </ul>
         );

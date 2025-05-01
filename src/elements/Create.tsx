@@ -1,33 +1,40 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import {Link, useNavigate} from 'react-router-dom'
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+
+interface FormValues {
+  name: string;
+  email: string;
+  admin: string;
+}
 
 function Create() {
-    const [values, setValues] = useState({
+    const [values, setValues] = useState<FormValues>({
         name: '',
         email: '',
         admin: ''
-    })
+    });
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    function handleSubmit(e){
-        e.preventDefault()
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
 
         axios.post('/add_user', values)
-        .then((res)=>{
-            
-            navigate('/')
-            console.log(res)
+        .then((res) => {
+            navigate('/');
+            console.log(res);
         })
-        .catch((err)=>console.log(err))
+        .catch((err) => console.log(err));
     }
+
   return (
     <div className='container vh-100 vw-100 bg-primary'>
         <div className='row'>
             <h3>Add Student</h3>
             <div className='d-flex justify-content-end'>
-                <Link to='/' class='btn btn-success'>Home</Link>
+                <Link to='/' className='btn btn-success'>Home</Link>
             </div>
             <form onSubmit={handleSubmit}>
                 <div className='form-group my-3'>
@@ -48,7 +55,7 @@ function Create() {
             </form>
         </div>
     </div>
-  )
+  );
 }
 
-export default Create
+export default Create;
