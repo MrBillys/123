@@ -17,11 +17,6 @@ import LoginPage from './pages/auth/LoginPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import NotFoundPage from './pages/shared/NotFoundPage';
 
-import Home from './elements/Home';
-import Create from './elements/Create';
-import Edit from './elements/Edit';
-import Read from './elements/Read';
-
 function App() {
   return (
     <Routes>
@@ -33,10 +28,6 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/b2b" element={<B2BPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/create" element={<Create />} />
-        <Route path="/edit/:id" element={<Edit />} />
-        <Route path="/read/:id" element={<Read />} />
       </Route>
 
       {/* Auth Routes */}
