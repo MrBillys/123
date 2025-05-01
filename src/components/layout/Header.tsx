@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Search } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Menu, X, Search } from 'lucide-react';
 import Logo from '../common/Logo';
 import Button from '../common/Button';
 
@@ -19,10 +19,6 @@ const Header = () => {
     // window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
   };
   
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   const navItems = [
     { label: 'Home', path: '/' },
     { label: 'Products', path: '/products' },

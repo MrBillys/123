@@ -2,7 +2,6 @@ import {
   ArrowDownRight, 
   ArrowUpRight,
   Download,
-  Filter,
   Calendar
 } from 'lucide-react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -21,6 +20,12 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+interface SearchTerm {
+  term: string;
+  count: number;
+  date: string;
+}
 
 const SearchAnalytics = () => {
   // Take the top 10 search terms for the chart
@@ -56,7 +61,7 @@ const SearchAnalytics = () => {
         color: '#243b53',
         font: {
           size: 16,
-          weight: 'bold',
+          weight: 'bold' as const,
         },
       },
     },
@@ -71,22 +76,22 @@ const SearchAnalytics = () => {
   const columns = [
     {
       header: 'Search Term',
-      accessor: 'term',
+      accessor: (item: SearchTerm) => item.term,
       sortable: true,
     },
     {
       header: 'Count',
-      accessor: 'count',
+      accessor: (item: SearchTerm) => String(item.count),
       sortable: true,
     },
     {
       header: 'Date',
-      accessor: (term: typeof searchTerms[0]) => formatDate(term.date),
+      accessor: (item: SearchTerm) => formatDate(item.date),
       sortable: true,
     },
     {
       header: 'Trend',
-      accessor: (term: typeof searchTerms[0]) => {
+      accessor: (item: SearchTerm) => {
         // This would normally be calculated based on previous periods
         // For demo purposes, we'll use a random trend
         const isUp = Math.random() > 0.5;

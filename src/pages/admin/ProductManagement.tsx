@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { Plus, Pencil, Eye, EyeOff, Trash, Filter } from 'lucide-react';
 import Button from '../../components/common/Button';
 import DataTable from '../../components/admin/DataTable';
 import { products } from '../../data/products';
 import { formatDate } from '../../utils/helpers';
+import { Product } from '../../types/product';
 
 const ProductManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +41,7 @@ const ProductManagement = () => {
   const columns = [
     {
       header: 'Product Name',
-      accessor: (product: typeof products[0]) => (
+      accessor: (product: Product) => (
         <div>
           <p className="font-medium text-secondary-900">{product.title}</p>
           <p className="text-xs text-secondary-500">#{product.partCode}</p>
@@ -48,17 +50,17 @@ const ProductManagement = () => {
     },
     {
       header: 'Category',
-      accessor: 'category',
+      accessor: (product: Product) => product.category,
       sortable: true,
     },
     {
       header: 'Model',
-      accessor: 'model',
+      accessor: (product: Product) => product.model,
       sortable: true,
     },
     {
       header: 'Stock',
-      accessor: (product: typeof products[0]) => {
+      accessor: (product: Product) => {
         const statusColors = {
           'In Stock': 'text-success-700 bg-success-50',
           'Limited': 'text-warning-700 bg-warning-50',
@@ -74,17 +76,17 @@ const ProductManagement = () => {
     },
     {
       header: 'Views',
-      accessor: 'viewCount',
+      accessor: (product: Product) => String(product.viewCount),
       sortable: true,
     },
     {
       header: 'Date Added',
-      accessor: (product: typeof products[0]) => formatDate(product.createdAt),
+      accessor: (product: Product) => formatDate(product.createdAt),
       sortable: true,
     },
     {
       header: 'Status',
-      accessor: (product: typeof products[0]) => (
+      accessor: (product: Product) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
           product.isVisible 
             ? 'text-success-700 bg-success-50' 

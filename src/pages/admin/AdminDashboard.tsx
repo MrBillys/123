@@ -1,11 +1,10 @@
+
 import { useState } from 'react';
 import { 
   Users, 
   Package, 
   Search, 
-  TrendingUp,
-  BarChart,
-  Eye
+  TrendingUp
 } from 'lucide-react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
@@ -76,7 +75,7 @@ const AdminDashboard = () => {
         color: '#243b53',
         font: {
           size: 16,
-          weight: 'bold',
+          weight: 'bold' as const,
         },
       },
     },
@@ -101,7 +100,7 @@ const AdminDashboard = () => {
         color: '#243b53',
         font: {
           size: 16,
-          weight: 'bold',
+          weight: 'bold' as const,
         },
       },
     },

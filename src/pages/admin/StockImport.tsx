@@ -316,10 +316,10 @@ const StockImport = () => {
                     variant="outline"
                     size="sm"
                     leftIcon={<Download size={16} />}
-                    onClick={getTemplateFile}
+                    href="path/to/template.csv"
                     fullWidth
                   >
-                    Download Template File
+                    Download Template
                   </Button>
                 </div>
               </div>
