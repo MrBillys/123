@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:dev": "vite build --mode development"
-    "lint": "eslint .",
+    "build:dev": "vite build --mode development",
     "preview": "vite preview"
   },
   "dependencies": {
