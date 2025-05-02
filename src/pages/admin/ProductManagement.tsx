@@ -1,19 +1,47 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Pencil, Eye, EyeOff, Trash, Filter } from 'lucide-react';
 import Button from '../../components/common/Button';
 import DataTable from '../../components/admin/DataTable';
 import { products } from '../../data/products';
 import { formatDate } from '../../utils/helpers';
 import { Product } from '../../types/product';
+import { productApi } from '../../services/api';
+import { FEATURES } from '../../config';
 
 const ProductManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [showInactive, setShowInactive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  // For demo purposes, we'll work with a copy of the data
-  const [productData, setProductData] = useState(products);
+  // For now, we'll continue to use the mock data, but we're preparing for API integration
+  const [productData, setProductData] = useState<Product[]>(products);
+  
+  // This useEffect will be used to fetch products from your backend when ready
+  useEffect(() => {
+    // Only attempt to fetch from API if we're not using mock data
+    if (!FEATURES.USE_MOCK_DATA) {
+      const fetchProducts = async () => {
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+          const data = await productApi.getAll();
+          setProductData(data);
+        } catch (err) {
+          console.error('Failed to fetch products:', err);
+          setError('Failed to load products. Please try again later.');
+          // Fallback to mock data if API fails
+          setProductData(products);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchProducts();
+    }
+  }, []);
   
   const handleAddProduct = () => {
     setSelectedProductId(null);
@@ -25,18 +53,59 @@ const ProductManagement = () => {
     setIsModalOpen(true);
   };
   
-  const handleToggleVisibility = (id: string) => {
+  const handleToggleVisibility = async (id: string) => {
+    // Find the product to toggle visibility
+    const product = productData.find(p => p.id === id);
+    if (!product) return;
+    
+    // Optimistically update the UI
     setProductData(prev => 
       prev.map(product => 
         product.id === id ? { ...product, isVisible: !product.isVisible } : product
       )
     );
+    
+    // If not using mock data, update on the backend
+    if (!FEATURES.USE_MOCK_DATA) {
+      try {
+        await productApi.update(id, { isVisible: !product.isVisible });
+      } catch (err) {
+        console.error('Failed to update product visibility:', err);
+        // Revert the optimistic update if the API call fails
+        setProductData(prev => 
+          prev.map(p => p.id === id ? product : p)
+        );
+        setError('Failed to update product visibility. Please try again.');
+      }
+    }
+  };
+  
+  const handleDeleteProduct = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      // Optimistically update UI
+      setProductData(prev => prev.filter(product => product.id !== id));
+      
+      // If not using mock data, delete from backend
+      if (!FEATURES.USE_MOCK_DATA) {
+        try {
+          await productApi.delete(id);
+        } catch (err) {
+          console.error('Failed to delete product:', err);
+          // Restore the product if the API call fails
+          const deletedProduct = products.find(p => p.id === id);
+          if (deletedProduct) {
+            setProductData(prev => [...prev, deletedProduct]);
+          }
+          setError('Failed to delete product. Please try again.');
+        }
+      }
+    }
   };
   
   const filteredProducts = showInactive 
     ? productData 
     : productData.filter(p => p.isVisible);
-  
+
   // Define columns for the data table
   const columns = [
     {
@@ -98,8 +167,48 @@ const ProductManagement = () => {
     },
   ];
 
+  // Update the "Delete Product" button onClick to use the new handler
+  // You'll need to modify the actions prop in the DataTable component:
+  const actions = (product: Product) => (
+    <div className="flex justify-end gap-2">
+      <button
+        onClick={() => handleToggleVisibility(product.id)}
+        className="p-1 text-secondary-700 hover:text-primary-600 hover:bg-secondary-50 rounded"
+        title={product.isVisible ? 'Hide product' : 'Show product'}
+      >
+        {product.isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+      <button
+        onClick={() => handleEditProduct(product.id)}
+        className="p-1 text-secondary-700 hover:text-primary-600 hover:bg-secondary-50 rounded"
+        title="Edit product"
+      >
+        <Pencil size={18} />
+      </button>
+      <button
+        onClick={() => handleDeleteProduct(product.id)}
+        className="p-1 text-secondary-700 hover:text-error-600 hover:bg-secondary-50 rounded"
+        title="Delete product"
+      >
+        <Trash size={18} />
+      </button>
+    </div>
+  );
+
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-4 bg-error-50 text-error-700 rounded-md">
+          {error}
+          <button 
+            className="ml-2 text-error-900 underline"
+            onClick={() => setError(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      
       <div className="mb-8 flex flex-wrap justify-between items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-secondary-900">Product Management</h1>
@@ -125,36 +234,19 @@ const ProductManagement = () => {
         </div>
       </div>
       
-      <DataTable
-        columns={columns}
-        data={filteredProducts}
-        keyField="id"
-        searchField="title"
-        actions={(product) => (
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => handleToggleVisibility(product.id)}
-              className="p-1 text-secondary-700 hover:text-primary-600 hover:bg-secondary-50 rounded"
-              title={product.isVisible ? 'Hide product' : 'Show product'}
-            >
-              {product.isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-            <button
-              onClick={() => handleEditProduct(product.id)}
-              className="p-1 text-secondary-700 hover:text-primary-600 hover:bg-secondary-50 rounded"
-              title="Edit product"
-            >
-              <Pencil size={18} />
-            </button>
-            <button
-              className="p-1 text-secondary-700 hover:text-error-600 hover:bg-secondary-50 rounded"
-              title="Delete product"
-            >
-              <Trash size={18} />
-            </button>
-          </div>
-        )}
-      />
+      {isLoading ? (
+        <div className="flex justify-center p-8">
+          <p>Loading products...</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredProducts}
+          keyField="id"
+          searchField="title"
+          actions={actions}
+        />
+      )}
       
       {/* Product Editor Modal - would be implemented fully in a real app */}
       {isModalOpen && (
@@ -166,6 +258,7 @@ const ProductManagement = () => {
             
             <p className="text-secondary-600 mb-4">
               This modal would contain a complete product form in a real implementation.
+              It would be connected to your backend API endpoints.
             </p>
             
             <div className="flex justify-end gap-3 mt-6">

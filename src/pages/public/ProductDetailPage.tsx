@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import { Product, getProductById } from '../../data/products';
+import { getProductById } from '../../data/products';
+import { Product } from '../../types/product';
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +14,9 @@ const ProductDetailPage = () => {
       // Use the getProductById function from data/products
       const foundProduct = getProductById(id);
       // Use setState function style to avoid type mismatches
-      setProduct(currentProduct => foundProduct || currentProduct);
+      if (foundProduct) {
+        setProduct(foundProduct);
+      }
     }
   }, [id]);
 
